@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+
+<head>
+    <meta charset="UTF-8" />
+    <title id="title">Chegg unlocker</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" type="image/icon" href="assets/icon.png" id="Icon" />
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css">
+</head>
+
+<body>
+    <main>
+        <img src="assets/background.jpg" id="background_image">
+        <h1 class="title">Chegg unlocker</h1>
+        <h1 class="stats"><u>Requests:</u>
+            <%= requests %><br /><u>Expiration:</u>
+                <%= expiration %>
+        </h1>
+
+        <a href="/logout" class="logout">Logout</a>
+
+        <div id="url_menu">
+            <form action="/unlock" method="post" style="margin-top: 10%">
+                <input id="chegg_url" type="text" placeholder="Chegg url" maxLength="500" name="chegg_url"
+                    pattern="(^$|https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|www\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9]+\.[^\s]{2,}|www\.[a-zA-Z0-9]+\.[^\s]{2,})"
+                    oninvalid="this.setCustomValidity('Please enter a valid URL')" oninput="this.setCustomValidity('')">
+                <h3 id="or_text">OR</h3>
+                <input id="chegg_url" type="text" placeholder="Paste question keywords" maxLength="500"
+                    name="chegg_keyword" />
+                <h3 id="error_message">
+                    <%= errorMessage %>
+                </h3>
+                <div class="button_holder">
+                    <button class="unlock" id="unlock" value="send">Unlock</button>
+                </div>
+            </form>
+        </div>
+    </main>
+</body>

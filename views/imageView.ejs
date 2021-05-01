@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+
+<style type="text/css">
+    html {
+        overflow: scroll !important;
+    }
+</style>
+
+<head>
+    <meta charset="UTF-8" />
+    <title id="title">Chegg unlocker</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" type="image/icon" href="assets/icon.png" id="Icon" />
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css">
+</head>
+
+<body>
+    <main>
+        <form action="/" style="display: flex; justify-content: space-between; align-items: center;">
+            <button class="goBack" value="send">Go back</button>
+            <h1 class="stats_after"><u>Requests:</u>
+                <%= requests %>&emsp;&emsp;<u>Expiration:</u>
+                    <%= expiration %>
+            </h1>
+        </form>
+        <img src="assets/background.jpg" id="background_image">
+        <img style="width: 100%" src="data:image/png;base64, <%=screenshot %>">
+    </main>
+</body>

@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+
+<head>
+    <meta charset="UTF-8" />
+    <title id="title">Chegg unlocker - Login</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" type="image/icon" href="assets/icon.png" id="Icon" />
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css">
+</head>
+
+<body>
+    <main>
+        <img src="assets/background.jpg" id="background_image">
+        <h1 class="title">Chegg unlocker</h1>
+
+        <div id="password_menu">
+            <form action="/login" method="post">
+                <input id="access_id_login" type="text" placeholder="Access ID" maxLength="15" name="password" required>
+                <h3 id="error_message">
+                    <%= errorMessage %>
+                </h3>
+                <div class="button_holder">
+                    <button class="load" id="access" value="send">Enter</button>
+                </div>
+            </form>
+        </div>
+    </main>
+</body>
