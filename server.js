@@ -182,7 +182,7 @@ app.post('/unlock', (req, res) => {
                     req.session.save();
                     await page.click("[data-area*='result1']")
                     try {
-                      await page.waitForNavigation({ waitUntil: 'networkidle2', timeout: 5000 })
+                      await page.waitForNavigation({ waitUntil: 'networkidle2', timeout: 8000 })
                     } catch (e) {}
                   } else if (await page.$('.answer') != null || await page.$('.solution') != null) { // If arrived in a question/textbook screen
                     // Found question
