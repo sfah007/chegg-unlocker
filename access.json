@@ -1,1 +1,10 @@
-{"test":{"requests":995,"expiration":-1},"bruh":{"requests":-1,"expiration":1744187586}}
+{
+    "test1234": {
+        "requests": 995,
+        "expiration": -1
+    },
+    "bruh1234": {
+        "requests": -1,
+        "expiration": 1744187586
+    }
+}
