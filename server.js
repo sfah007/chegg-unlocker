@@ -205,6 +205,8 @@ app.post('/unlock', (req, res) => {
                   const screenshot = await page.screenshot({ encoding: 'base64' , fullPage: true }); // Screenshot and display
                   res.render('imageView.ejs', {screenshot: screenshot, requests : refreshRequestPrint(req.session.accessid), expiration: refreshExpirationPrint(req.session.accessid)});
                   await browser.close();
+                  req.session.status = '';
+                  req.session.save();
                 } catch (e) { // If error occured, give them back their request and display error message
 
                   if (refreshRequest(req.session.accessid) >= 0) { // Only add requests amount if not using expiration date
