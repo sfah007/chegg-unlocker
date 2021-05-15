@@ -203,7 +203,7 @@ app.post("/unlock", (req, res) => {
                 await reCaptcha(page, apikey); // Attempting to solve captcha using text to speech recognition
                 await page.waitForNavigation({
                   waitUntil: "networkidle2",
-                  timeout: 10000,
+                  timeout: 6000,
                 });
               } catch (e) {
                 console.log("Backup captcha solving");
