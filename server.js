@@ -18,7 +18,8 @@ const expressSession = require("express-session")({
 // Read access ID, requests and expiration data from json file
 let rawdata = fs.readFileSync("access.json");
 let users = JSON.parse(rawdata);
-let apikey = fs.readFileSync("apikey", "utf8");
+let witKey = fs.readFileSync("witKey", "utf8");
+let recaptchaKey = fs.readFileSync("recaptchaKey", "utf8");
 
 app.set("view-engine", "ejs");
 app.use(express.static("views"));
@@ -33,7 +34,7 @@ puppeteer.use(
   RecaptchaPlugin({
     provider: {
       id: "2captcha",
-      token: "0158d57e7ea33327ea089f0b3dc1775c",
+      token: recaptchaKey,
     },
     visualFeedback: true,
   })
@@ -200,7 +201,7 @@ app.post("/unlock", (req, res) => {
               req.session.status = "Attempting to solve captcha...";
               req.session.save();
               try {
-                await reCaptcha(page, apikey); // Attempting to solve captcha using text to speech recognition
+                await reCaptcha(page, witKey); // Attempting to solve captcha using text to speech recognition
                 await page.waitForNavigation({
                   waitUntil: "networkidle2",
                   timeout: 6000,

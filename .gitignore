@@ -106,5 +106,6 @@ dist
 
 cookies.json
 apache.conf
-apikey
 access.json
+recaptchaKey
+witKey
