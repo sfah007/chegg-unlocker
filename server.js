@@ -6,6 +6,7 @@ const pluginStealth = require("puppeteer-extra-plugin-stealth");
 const AdblockerPlugin = require("puppeteer-extra-plugin-adblocker");
 const reCaptcha = require("./captchaSolver.js");
 const RecaptchaPlugin = require("puppeteer-extra-plugin-recaptcha");
+const ghostCursor = require("ghost-cursor");
 const adblocker = AdblockerPlugin({
   blockTrackers: false,
 });
@@ -164,6 +165,12 @@ app.post("/unlock", (req, res) => {
               Origin: "https://www.chegg.com",
             });
 
+            const cursor = ghostCursor.createCursor(
+              page,
+              await ghostCursor.getRandomPagePoint(page),
+              true
+            );
+
             const cookiesString = fs.readFileSync("cookies.json");
             const cookies = JSON.parse(cookiesString);
             await page.setCookie(...cookies);
@@ -173,7 +180,7 @@ app.post("/unlock", (req, res) => {
               try {
                 await page.goto(req.body.chegg_url, {
                   waitUntil: "networkidle2",
-                  timeout: 10000,
+                  timeout: 8000,
                 });
               } catch (e) {}
             } else if (req.body.chegg_keyword != "") {
@@ -200,7 +207,7 @@ app.post("/unlock", (req, res) => {
               req.session.status = "Attempting to solve captcha...";
               req.session.save();
               try {
-                await reCaptcha(page, witKey); // Attempting to solve captcha using text to speech recognition
+                await reCaptcha(page, cursor, witKey); // Attempting to solve captcha using text to speech recognition
                 await page.waitForNavigation({
                   waitUntil: "networkidle2",
                   timeout: 8000,
@@ -214,6 +221,8 @@ app.post("/unlock", (req, res) => {
                 // Attempting to solve captcha using 2captcha
                 try {
                   await page.solveRecaptchas();
+                  req.session.status = "Captcha successfully solved!";
+                  req.session.save();
                   await page.waitForNavigation({
                     waitUntil: "networkidle2",
                     timeout: 6000,
@@ -221,21 +230,28 @@ app.post("/unlock", (req, res) => {
                 } catch (e) {}
               }
               console.log("Captcha done");
-              req.session.status = "Captcha successfully solved!";
-              req.session.save();
             }
 
             if ((await page.$("[data-area*='result1']")) != null) {
               // If arrived in a search screen
               req.session.status = "Found a matching question...";
               req.session.save();
-              await page.click("[data-area*='result1']");
+              await cursor.click("[data-area*='result1']");
               try {
                 await page.waitForNavigation({
                   waitUntil: "networkidle2",
-                  timeout: 10000,
+                  timeout: 4000,
                 });
-              } catch (e) {}
+              } catch (e) {
+                req.session.status = "Loading taking longer than expected...";
+                req.session.save();
+                try {
+                  await page.waitForNavigation({
+                    waitUntil: "networkidle2",
+                    timeout: 4000,
+                  });
+                } catch (e) {}
+              }
             } else if (
               (await page.$(".answer")) != null ||
               (await page.$(".solution")) != null
@@ -274,6 +290,7 @@ app.post("/unlock", (req, res) => {
               expiration: refreshExpirationPrint(req.session.accessid),
             });
             await browser.close();
+            screenshot = "";
             req.session.status = "";
             req.session.save();
           } catch (e) {

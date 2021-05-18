@@ -1,6 +1,5 @@
 const axios = require("axios");
 const https = require("https");
-const ghostCursor = require("ghost-cursor");
 
 function rdn(min, max) {
   // Function to generate random number based off max and min
@@ -9,14 +8,8 @@ function rdn(min, max) {
   return Math.floor(Math.random() * (max - min)) + min;
 }
 
-async function reCaptcha(page, apikey) {
+async function reCaptcha(page, cursor, apikey) {
   try {
-    const cursor = ghostCursor.createCursor(
-      page,
-      await ghostCursor.getRandomPagePoint(page),
-      true
-    );
-
     // Find the checkbox
     await page.waitForFunction(() => {
       const iframe = document.querySelector('iframe[src*="api2/anchor"]');
