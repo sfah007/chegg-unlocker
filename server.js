@@ -36,7 +36,6 @@ puppeteer.use(
       id: "2captcha",
       token: recaptchaKey,
     },
-    visualFeedback: true,
   })
 );
 
@@ -204,12 +203,12 @@ app.post("/unlock", (req, res) => {
                 await reCaptcha(page, witKey); // Attempting to solve captcha using text to speech recognition
                 await page.waitForNavigation({
                   waitUntil: "networkidle2",
-                  timeout: 6000,
+                  timeout: 8000,
                 });
               } catch (e) {
                 console.log("Backup captcha solving");
                 req.session.status =
-                  "Solving captcha failed, requiring human assistance... <i>(This should not take more than 1 min)</i>";
+                  "Still solving captcha, this is taking longer than expected...";
                 req.session.save();
 
                 // Attempting to solve captcha using 2captcha
@@ -234,7 +233,7 @@ app.post("/unlock", (req, res) => {
               try {
                 await page.waitForNavigation({
                   waitUntil: "networkidle2",
-                  timeout: 8000,
+                  timeout: 10000,
                 });
               } catch (e) {}
             } else if (
