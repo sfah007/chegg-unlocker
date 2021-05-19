@@ -240,7 +240,7 @@ app.post("/unlock", (req, res) => {
               try {
                 await page.waitForNavigation({
                   waitUntil: "networkidle2",
-                  timeout: 4000,
+                  timeout: 7000,
                 });
               } catch (e) {
                 req.session.status = "Loading taking longer than expected...";
