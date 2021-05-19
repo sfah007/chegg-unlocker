@@ -240,15 +240,16 @@ app.post("/unlock", (req, res) => {
               try {
                 await page.waitForNavigation({
                   waitUntil: "networkidle2",
-                  timeout: 7000,
+                  timeout: 5000,
                 });
               } catch (e) {
                 req.session.status = "Loading taking longer than expected...";
                 req.session.save();
                 try {
+                  await cursor.click("[data-area*='result1']");
                   await page.waitForNavigation({
                     waitUntil: "networkidle2",
-                    timeout: 4000,
+                    timeout: 5000,
                   });
                 } catch (e) {}
               }
