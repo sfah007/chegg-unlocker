@@ -1,309 +1,358 @@
 @font-face {
-	font-family: CircularBold;
-	src: url('assets/CircularStd-Medium.ttf') format('truetype'), url('assets/CircularStd-Medium.woff') format('woff');
+  font-family: CircularBold;
+  src: url("assets/CircularStd-Medium.ttf") format("truetype"), url("assets/CircularStd-Medium.woff") format("woff");
 }
 
 html {
-	height: 100%;
-	width: 100%;
-	background-color: black;
-	overflow: hidden;
+  height: 100%;
+  width: 100%;
+  background-color: black;
+  overflow: hidden;
 }
 
 ::-webkit-scrollbar {
-	width: 5px;
+  width: 5px;
 }
 
 ::-webkit-scrollbar-track {
-	background: #f1f1f100;
+  background: #f1f1f100;
 }
 
 ::-webkit-scrollbar-thumb {
-	background: rgba(136, 136, 136, 0.678);
+  background: rgba(136, 136, 136, 0.678);
 }
 
 ::-webkit-scrollbar-thumb:hover {
-	background: rgba(85, 85, 85, 0.856);
+  background: rgba(85, 85, 85, 0.856);
 }
 
 #background_image {
-	position: fixed;
-	z-index: -99999999;
-	right: 0;
-	bottom: 0;
-	min-width: 100%;
-	min-height: 100%;
-	opacity: 0.2;
-	filter: blur(6px);
+  position: fixed;
+  z-index: -99999999;
+  right: 0;
+  bottom: 0;
+  min-width: 100%;
+  min-height: 100%;
+  opacity: 0.2;
+  filter: blur(6px);
 }
 
 .hidden {
-	display: none;
+  display: none;
 }
 
 .title {
-	text-align: center;
-	font-family: 'CircularBold';
-	font-size: 5em;
-	color: white;
-	margin-top: 3%;
-	margin-bottom: 1.5%;
+  text-align: center;
+  font-family: "CircularBold";
+  font-size: 5em;
+  color: white;
+  margin-top: 5%;
+  margin-bottom: 1.5%;
 }
 
 .stats {
-	text-align: center;
-	font-family: 'CircularBold';
-	font-size: 2em;
-	color: white;
-	margin: 1%;
+  text-align: center;
+  font-family: "CircularBold";
+  font-size: 2em;
+  color: white;
+  margin: 1%;
 }
 
 .stats_after {
-	font-family: 'CircularBold';
-	font-size: 1.6em;
-	color: white;
-	margin: 1%;
-	display: inline-block;
+  font-family: "CircularBold";
+  font-size: 1.6em;
+  color: white;
+  margin: 1%;
+  text-align: right;
 }
 
 .button_holder {
-	display: flex;
-	align-items: center;
-	flex-direction: column;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
 }
 
 #error_message {
-	min-height: 20px;
-	margin: 10px 0px 0px 5px;
-	font-family: 'CircularBold';
-	font-size: 15px;
-	color: red;
+  min-height: 20px;
+  margin: 10px 0px 10px 5px;
+  font-family: "CircularBold";
+  font-size: 15px;
+  color: red;
 }
 
 #or_text {
-	min-height: 20px;
-	margin: 20px 0px 20px 5px;
-	font-family: 'CircularBold';
-	font-size: 20px;
-	color: rgb(255, 255, 255);
-	text-align: center;
+  min-height: 20px;
+  margin: 20px 0px 20px 5px;
+  font-family: "CircularBold";
+  font-size: 20px;
+  color: rgb(255, 255, 255);
+  text-align: center;
 }
 
 button,
 input:focus {
-	outline: 0;
+  outline: 0;
 }
 
 #load_game {
-	margin: 20px;
-	font-family: 'CircularBold';
-	background: #ff7900;
-	color: #ffffff;
-	cursor: pointer;
-	font-size: 2em;
-	padding: 1.5rem 3rem 1.5rem 3rem;
-	border: 0;
-	transition: all 0.5s;
-	border-radius: 8px;
-	width: auto;
-	position: relative;
+  margin: 20px;
+  font-family: "CircularBold";
+  background: #ff7900;
+  color: #ffffff;
+  cursor: pointer;
+  font-size: 2em;
+  padding: 1.5rem 3rem 1.5rem 3rem;
+  border: 0;
+  transition: all 0.5s;
+  border-radius: 8px;
+  width: auto;
+  position: relative;
 }
 
 #load_game::after {
-	content: "\f2f6";
-	font-family: "Font Awesome 5 Free";
-	font-weight: 900;
-	position: absolute;
-	left: 85%;
-	top: 31%;
-	right: 5%;
-	bottom: 0;
-	opacity: 0;
-	transition: all 0.3s;
+  content: "\f2f6";
+  font-family: "Font Awesome 5 Free";
+  font-weight: 900;
+  position: absolute;
+  left: 85%;
+  top: 31%;
+  right: 5%;
+  bottom: 0;
+  opacity: 0;
+  transition: all 0.3s;
 }
 
 #load_game:hover {
-	background: #ff7900;
-	transition: all 0.5s;
-	border-radius: 10px;
-	box-shadow: 0px 6px 15px #ff990061;
-	padding: 1.5rem 5rem 1.5rem 3rem;
+  background: #ff7900;
+  transition: all 0.5s;
+  border-radius: 10px;
+  box-shadow: 0px 6px 15px #ff990061;
+  padding: 1.5rem 5rem 1.5rem 3rem;
 }
 #load_game:hover::after {
-	opacity: 1;
-	transition: all 0.5s;
+  opacity: 1;
+  transition: all 0.5s;
 }
 
 #password_menu {
-	position: absolute;
-	transform: translate(-50%, -50%);
-	top: 60%;
-	left: 50%;
+  position: absolute;
+  transform: translate(-50%, -50%);
+  top: 60%;
+  left: 50%;
 }
 
 #access_id_login {
-	padding: 1.5rem 2rem;
-	border-radius: 0.2rem;
-	font-size: 2rem;
-	font-family: 'CircularBold';
+  padding: 1.5rem 2rem;
+  border-radius: 0.2rem;
+  font-size: 2rem;
+  font-family: "CircularBold";
 }
 
 .load {
-	margin: 20px;
-	font-family: 'CircularBold';
-	background: #ff7900;
-	color: #ffffff;
-	cursor: pointer;
-	font-size: 2em;
-	padding: 1.5rem 3rem 1.5rem 3rem;
-	border: 0;
-	transition: all 0.5s;
-	border-radius: 8px;
-	width: auto;
-	position: relative;
+  margin: 20px;
+  font-family: "CircularBold";
+  background: #ff7900;
+  color: #ffffff;
+  cursor: pointer;
+  font-size: 2em;
+  padding: 1.5rem 3rem 1.5rem 3rem;
+  border: 0;
+  transition: all 0.5s;
+  border-radius: 8px;
+  width: auto;
+  position: relative;
 }
 
 .load::after {
-	content: "\f2f6";
-	font-family: "Font Awesome 5 Free";
-	font-weight: 900;
-	position: absolute;
-	left: 75%;
-	top: 31%;
-	right: 5%;
-	bottom: 0;
-	opacity: 0;
-	transition: all 0.3s;
+  content: "\f2f6";
+  font-family: "Font Awesome 5 Free";
+  font-weight: 900;
+  position: absolute;
+  left: 75%;
+  top: 31%;
+  right: 5%;
+  bottom: 0;
+  opacity: 0;
+  transition: all 0.3s;
 }
 
 .load:hover {
-	background: #ff7900;
-	transition: all 0.5s;
-	border-radius: 10px;
-	box-shadow: 0px 6px 15px #ff990061;
-	padding: 1.5rem 5rem 1.5rem 3rem;
+  background: #ff7900;
+  transition: all 0.5s;
+  border-radius: 10px;
+  box-shadow: 0px 6px 15px #ff990061;
+  padding: 1.5rem 5rem 1.5rem 3rem;
 }
 .load:hover::after {
-	opacity: 1;
-	transition: all 0.5s;
+  opacity: 1;
+  transition: all 0.5s;
 }
 
 .unlock {
-	margin: 20px;
-	font-family: 'CircularBold';
-	background: #ff7900;
-	color: #ffffff;
-	cursor: pointer;
-	font-size: 2em;
-	padding: 1.5rem 3rem 1.5rem 3rem;
-	border: 0;
-	transition: all 0.5s;
-	border-radius: 8px;
-	width: auto;
-	position: relative;
+  margin: 20px;
+  font-family: "CircularBold";
+  background: #ff7900;
+  color: #ffffff;
+  cursor: pointer;
+  font-size: 2em;
+  padding: 1.5rem 3rem 1.5rem 3rem;
+  border: 0;
+  transition: all 0.5s;
+  border-radius: 8px;
+  width: auto;
+  position: relative;
 }
 
 .unlock::after {
-	content: "\f09c";
-	font-family: "Font Awesome 5 Free";
-	font-weight: 900;
-	position: absolute;
-	left: 75%;
-	top: 31%;
-	right: 5%;
-	bottom: 0;
-	opacity: 0;
-	transition: all 0.3s;
+  content: "\f09c";
+  font-family: "Font Awesome 5 Free";
+  font-weight: 900;
+  position: absolute;
+  left: 75%;
+  top: 31%;
+  right: 5%;
+  bottom: 0;
+  opacity: 0;
+  transition: all 0.3s;
 }
 
 .unlock:hover {
-	background: #ff7900;
-	transition: all 0.5s;
-	border-radius: 10px;
-	box-shadow: 0px 6px 15px #ff990061;
-	padding: 1.5rem 5rem 1.5rem 3rem;
+  background: #ff7900;
+  transition: all 0.5s;
+  border-radius: 10px;
+  box-shadow: 0px 6px 15px #ff990061;
+  padding: 1.5rem 5rem 1.5rem 3rem;
 }
 .unlock:hover::after {
-	opacity: 1;
-	transition: all 0.5s;
+  opacity: 1;
+  transition: all 0.5s;
 }
 
 .goBack {
-	margin: 10px;
-	font-family: 'CircularBold';
-	background: #ff7900;
-	color: #ffffff;
-	cursor: pointer;
-	font-size: 2em;
-	padding: 1rem 3rem 1rem 3rem;
-	border: 0;
-	transition: all 0.5s;
-	border-radius: 8px;
-	width: auto;
-	position: relative;
+  margin: 10px;
+  font-family: "CircularBold";
+  background: #ff7900;
+  color: #ffffff;
+  cursor: pointer;
+  font-size: 2em;
+  padding: 1rem 3rem 1rem 3rem;
+  border: 0;
+  transition: all 0.5s;
+  border-radius: 8px;
+  width: auto;
+  position: relative;
 }
 
 .goBack::after {
-	content: "\f04a";
-	font-family: "Font Awesome 5 Free";
-	font-weight: 900;
-	position: absolute;
-	left: 75%;
-	top: 25%;
-	right: 5%;
-	bottom: 0;
-	opacity: 0;
-	transition: all 0.3s;
+  content: "\f04a";
+  font-family: "Font Awesome 5 Free";
+  font-weight: 900;
+  position: absolute;
+  left: 75%;
+  top: 25%;
+  right: 5%;
+  bottom: 0;
+  opacity: 0;
+  transition: all 0.3s;
 }
 
 .goBack:hover {
-	background: #ff7900;
-	transition: all 0.5s;
-	border-radius: 10px;
-	box-shadow: 0px 6px 15px #ff990061;
-	padding: 1rem 5rem 1rem 3rem;
+  background: #ff7900;
+  transition: all 0.5s;
+  border-radius: 10px;
+  box-shadow: 0px 6px 15px #ff990061;
+  padding: 1rem 5rem 1rem 3rem;
 }
 .goBack:hover::after {
-	opacity: 1;
-	transition: all 0.5s;
+  opacity: 1;
+  transition: all 0.5s;
 }
 
 .logout {
-	font-family: 'CircularBold';
-	font-size: 1.2em;
-	color: white;
-	position: absolute;
-	top: 5%;
-	left: 3%;
-	animation: fadein 0.5s;
-	text-decoration: none;
+  font-family: "CircularBold";
+  font-size: 1.2em;
+  color: white;
+  position: absolute;
+  top: 5%;
+  left: 3%;
+  animation: fadein 0.5s;
+  text-decoration: none;
 }
 
 .logout:hover {
-	text-decoration: underline;
+  text-decoration: underline;
 }
 
 @keyframes fadein {
-	from {
-		opacity: 0;
-	}
-	to {
-		opacity: 1;
-	}
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 #url_menu {
-	position: absolute;
-	transform: translate(-50%, -50%);
-	width: 90%;
-	top: 60%;
-	left: 50%;
+  position: absolute;
+  transform: translate(-50%, -50%);
+  width: 90%;
+  top: 60%;
+  left: 50%;
 }
 
 #chegg_url {
-	padding: 1rem 1.5rem;
-	border-radius: 0.2rem;
-	width: 93%;
-	font-size: 1.5rem;
-	font-family: 'CircularBold';
+  padding: 1rem 1.5rem;
+  border-radius: 0.2rem;
+  width: 93%;
+  font-size: 1.5rem;
+  font-family: "CircularBold";
+}
+
+#answer_img {
+  width: 55%;
+  min-width: 800px;
+  left: 50%;
+  position: absolute;
+  transform: translate(-50%);
+}
+
+#answer_bg {
+  width: 100%;
+  height: calc(100% - 90.4px);
+  background-color: white;
+  position: absolute;
+  overflow: auto;
+  left: 0;
+}
+
+#nav_form {
+  justify-content: space-between;
+  align-items: center;
+  display: grid;
+  grid-template-columns: 280px 35px 1fr;
+}
+
+#refresh_button {
+  height: 2em;
+  transform: rotate(0deg);
+  opacity: 0;
+  transition: 0.5s;
+}
+
+#refresh_button:hover {
+  transform: rotate(200deg);
+  transition: 0.5s;
+}
+
+.rotate {
+  animation: rotation 1s infinite linear;
+}
+
+@keyframes rotation {
+  from {
+    transform: rotate(20deg);
+  }
+  to {
+    transform: rotate(379deg);
+  }
 }

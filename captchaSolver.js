@@ -20,9 +20,7 @@ async function reCaptcha(page, cursor, apikey) {
 
     // Click the captcha checkbox
     let frames = await page.frames();
-    const recaptchaFrame = frames.find((frame) =>
-      frame.url().includes("api2/anchor")
-    );
+    const recaptchaFrame = frames.find((frame) => frame.url().includes("api2/anchor"));
     const checkbox = await recaptchaFrame.$("#recaptcha-anchor");
     await cursor.click(checkbox, {
       waitForClick: rdn(50, 100),
@@ -30,13 +28,11 @@ async function reCaptcha(page, cursor, apikey) {
       paddingPercentage: 2,
     });
 
-    await page.waitForTimeout(rdn(1500, 2000));
+    await page.waitForTimeout(rdn(150, 200));
 
     // Click the audio captcha button
     frames = await page.frames();
-    const imageFrame = frames.find((frame) =>
-      frame.url().includes("api2/bframe")
-    );
+    const imageFrame = frames.find((frame) => frame.url().includes("api2/bframe"));
     const audioButton = await imageFrame.$("#recaptcha-audio-button");
     await cursor.click(audioButton, {
       waitForClick: rdn(50, 100),
@@ -52,9 +48,7 @@ async function reCaptcha(page, cursor, apikey) {
             const iframe = document.querySelector('iframe[src*="api2/bframe"]');
             if (!iframe) return false;
 
-            return !!iframe.contentWindow.document.querySelector(
-              ".rc-audiochallenge-tdownload-link"
-            );
+            return !!iframe.contentWindow.document.querySelector(".rc-audiochallenge-tdownload-link");
           },
           { timeout: 1000 }
         );
@@ -95,7 +89,7 @@ async function reCaptcha(page, cursor, apikey) {
       if (undefined == response.data.text) {
         const reloadButton = await imageFrame.$("#recaptcha-reload-button");
         await cursor.click(reloadButton, {
-          waitForClick: rdn(500, 1000),
+          waitForClick: rdn(150, 200),
           waitForSelector: rdn(100, 150),
           paddingPercentage: 2,
         });
@@ -115,7 +109,7 @@ async function reCaptcha(page, cursor, apikey) {
       const verifyButton = await imageFrame.$("#recaptcha-verify-button");
       await cursor.click(verifyButton, {
         waitForClick: rdn(25, 100),
-        waitForSelector: rdn(200, 500),
+        waitForSelector: rdn(200, 300),
         paddingPercentage: 2,
       });
 
@@ -126,23 +120,20 @@ async function reCaptcha(page, cursor, apikey) {
             const iframe = document.querySelector('iframe[src*="api2/anchor"]');
             if (!iframe) return false;
 
-            return !!iframe.contentWindow.document.querySelector(
-              '#recaptcha-anchor[aria-checked="true"]'
-            );
+            return !!iframe.contentWindow.document.querySelector('#recaptcha-anchor[aria-checked="true"]');
           },
           { timeout: 1000 }
         );
 
-        return page.evaluate(
-          () => document.getElementById("g-recaptcha-response").value
-        );
+        return page.evaluate(() => document.getElementById("g-recaptcha-response").value);
       } catch (e) {
         continue; // Multiple audio, restart loop
       }
     }
   } catch (e) {
     console.error("Captcha failed");
-    return null; // Try again
+    console.log(e);
+    return;
   }
 }
 

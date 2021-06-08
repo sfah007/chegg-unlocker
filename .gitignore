@@ -103,9 +103,10 @@ dist
 # TernJS port file
 .tern-port
 
-
-cookies.json
-apache.conf
+/cache
+/database
 access.json
-recaptchaKey
-witKey
+cookies.json
+database.json
+login.txt
+apikeys.json

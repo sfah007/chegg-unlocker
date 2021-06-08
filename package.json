@@ -16,6 +16,7 @@
     "ghost-cursor": "^1.1.5",
     "pm2": "^4.5.6",
     "puppeteer": "^8.0.0",
+    "puppeteer-cluster": "^0.22.0",
     "puppeteer-extra": "^3.1.18",
     "puppeteer-extra-plugin-adblocker": "^2.11.11",
     "puppeteer-extra-plugin-recaptcha": "^3.3.10",

@@ -1,29 +1,99 @@
 <!DOCTYPE html>
 
-<style type="text/css">
-    html {
-        overflow: scroll !important;
-    }
-</style>
-
 <head>
-    <meta charset="UTF-8" />
-    <title id="title">Chegg unlocker</title>
-    <link rel="stylesheet" href="style.css">
-    <link rel="icon" type="image/icon" href="assets/icon.png" id="Icon" />
-    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css">
+  <meta charset="UTF-8" />
+  <title id="title">Chegg unlocker</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="icon" type="image/icon" href="assets/icon.png" id="Icon" />
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css" />
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 </head>
 
 <body>
-    <main>
-        <form action="/" style="display: flex; justify-content: space-between; align-items: center;">
-            <button class="goBack" value="send">Go back</button>
-            <h1 class="stats_after"><u>Requests:</u>
-                <%= requests %>&emsp;&emsp;<u>Expiration:</u>
-                    <%= expiration %>
-            </h1>
-        </form>
-        <img src="assets/background.jpg" id="background_image">
-        <img style="width: 100%" src="data:image/png;base64, <%=screenshot %>">
-    </main>
+  <main>
+    <form action="/" id="nav_form">
+      <div><button class="goBack" value="send">Go back</button></div>
+      <img src="assets/refresh.png" id="refresh_button" onclick="refreshScreenshot()" />
+      <h1 class="stats_after">
+        <u>Requests:</u> <%= requests %>&emsp;&emsp;<u>Expiration:</u>
+        <%= expiration %>
+      </h1>
+    </form>
+    <img src="assets/background.jpg" id="background_image" />
+    <div id="answer_bg">
+      <img id="answer_img" src="data:image/png;base64, <%=screenshot %>" />
+    </div>
+  </main>
+  <script type="text/javascript">
+    let refresh = "<%= refresh %>" == "true";
+    let originalText = $(".stats_after").html();
+    let loading = false;
+
+    if (refresh) {
+      $("#refresh_button").css("opacity", 1);
+      $("#refresh_button").css("cursor", "pointer");
+    }
+
+    function refreshScreenshot() {
+      if (refresh && !loading) {
+        $.ajax({
+          type: "post",
+          url: "/unlock",
+          cache: false,
+          data: { chegg_url: "<%= url %>", skipDatabase: false },
+          dataType: "html",
+          success: function (data) {
+            clearInterval(statusFetch);
+            refresh = false;
+            loading = false;
+            $("html").html(data);
+            originalText = $(".stats_after").html();
+          },
+        });
+        loading = true;
+        $("#refresh_button").addClass("rotate");
+        $(".goBack").css({ "pointer-events": "none", background: "#7e7e7e" });
+        $(".stats_after").fadeOut(500, function () {
+          $(this).css("text-align", "left").html("").fadeIn(500);
+        });
+
+        statusFetch = setInterval(function () {
+          update();
+        }, 500);
+
+        function update() {
+          $.ajax({
+            type: "get",
+            url: "/status",
+            cache: false,
+            dataType: "json",
+            success: function (data) {
+              if (data.message.includes("queue")) {
+                $(".stats_after").html(data.message + "  <i>" + data.queue + (data.queue == 1 ? " person" : " people") + " in front of you");
+              } else {
+                $(".stats_after").html(data.message);
+              }
+            },
+          });
+        }
+      }
+    }
+
+    $("#refresh_button").hover(
+      function () {
+        if (!loading) {
+          $(".stats_after").fadeOut(300, function () {
+            $(this).css("text-align", "left").html("Refresh the question with a newer answer").fadeIn(300);
+          });
+        }
+      },
+      function () {
+        if (!loading) {
+          $(".stats_after").fadeOut(300, function () {
+            $(this).css("text-align", "right").html(originalText).fadeIn(300);
+          });
+        }
+      }
+    );
+  </script>
 </body>

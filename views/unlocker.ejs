@@ -1,61 +1,61 @@
 <!DOCTYPE html>
 
 <head>
-    <meta charset="UTF-8" />
-    <title id="title">Chegg unlocker</title>
-    <link rel="stylesheet" href="style.css">
-    <link rel="icon" type="image/icon" href="assets/icon.png" id="Icon" />
-    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <meta charset="UTF-8" />
+  <title id="title">Chegg unlocker</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="icon" type="image/icon" href="assets/icon.png" id="Icon" />
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.13.0/css/all.css" />
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 </head>
 
 <body>
-    <main>
-        <img src="assets/background.jpg" id="background_image">
-        <h1 class="title">Chegg unlocker</h1>
-        <h1 class="stats"><u>Requests:</u>
-            <%= requests %><br /><u>Expiration:</u>
-                <%= expiration %>
-        </h1>
+  <main>
+    <img src="assets/background.jpg" id="background_image" />
+    <h1 class="title">Chegg unlocker</h1>
+    <h1 class="stats">
+      <u>Requests:</u> <%= requests %><br /><u>Expiration:</u>
+      <%= expiration %>
+    </h1>
 
-        <a href="/logout" class="logout">Logout</a>
+    <a href="/logout" class="logout">Logout</a>
 
-        <div id="url_menu">
-            <form id="link_form" action="/unlock" method="post" style="margin-top: 10%">
-                <input id="chegg_url" type="text" placeholder="Chegg url" maxLength="500" name="chegg_url"
-                    pattern="(^$|https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|www\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9]+\.[^\s]{2,}|www\.[a-zA-Z0-9]+\.[^\s]{2,})"
-                    oninvalid="this.setCustomValidity('Please enter a valid URL')" oninput="this.setCustomValidity('')">
-                <h3 id="or_text">OR</h3>
-                <input id="chegg_url" type="text" placeholder="Paste question keywords" maxLength="500"
-                    name="chegg_keyword" />
-                <h3 id="error_message">
-                    <%= errorMessage %>
-                </h3>
-                <div class="button_holder">
-                    <button onclick="init()" class="unlock" id="unlock" value="send">Unlock</button>
-                </div>
-            </form>
+    <div id="url_menu">
+      <form id="link_form" action="/unlock" method="post" style="margin-top: 10%">
+        <input id="chegg_url" type="text" placeholder="Paste url or enter question keywords" name="chegg_url" />
+        <h3 id="error_message"><%= errorMessage %></h3>
+        <div class="button_holder">
+          <button onclick="init()" class="unlock" id="unlock" value="send">Unlock</button>
         </div>
-    </main>
+      </form>
+    </div>
+  </main>
 
-    <script type="text/javascript">
-        function init() {
-            $('#link_form').submit();
-            update()
-            setInterval(function () { update() }, 1000)
-        }
+  <script type="text/javascript">
+    function init() {
+      $(".unlock").css({ "pointer-events": "none", background: "#7e7e7e" });
+      $("#link_form").submit();
+      setInterval(function () {
+        update();
+      }, 500);
+    }
 
-        function update() {
-            $.ajax({
-                type: 'get',
-                url: '/status',
-                success: function (data) {
-                    if (data.length > 0) {
-                        $('#error_message').css('color', 'white')
-                        $('#error_message').html(data)
-                    }
-                }
-            })
-        }
-    </script>
+    function update() {
+      $.ajax({
+        type: "get",
+        url: "/status",
+        cache: false,
+        dataType: "json",
+        success: function (data) {
+          if (data.message.includes("queue")) {
+            $("#error_message").css("color", "white");
+            $("#error_message").html(data.message + "  <i>" + data.queue + (data.queue == 1 ? " person" : " people") + " in front of you");
+          } else {
+            $("#error_message").css("color", "white");
+            $("#error_message").html(data.message);
+          }
+        },
+      });
+    }
+  </script>
 </body>
