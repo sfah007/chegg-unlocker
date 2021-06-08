@@ -70,17 +70,21 @@ puppeteer.use(
     const { url, req, res, usingURL } = data;
 
     try {
-      res.render("imageView.ejs", {
-        screenshot: fs.readFileSync("database/" + searchDatabase(url.replace(/\?/g, "")), { encoding: "base64" }),
-        requests: refreshRequestPrint(req.session.accessid),
-        expiration: refreshExpirationPrint(req.session.accessid),
-        refresh: true,
-        url: url,
-      });
+      if (!skipDatabase) {
+        res.render("imageView.ejs", {
+          screenshot: fs.readFileSync("database/" + searchDatabase(url.replace(/\?/g, "")), { encoding: "base64" }),
+          requests: refreshRequestPrint(req.session.accessid),
+          expiration: refreshExpirationPrint(req.session.accessid),
+          refresh: true,
+          url: url,
+        });
 
-      setStatus(req, "");
-      removeUserOnline(req.session.accessid);
-      return;
+        setStatus(req, "");
+        removeUserOnline(req.session.accessid);
+        return;
+      } else {
+        throw new Error();
+      }
     } catch (e) {
       try {
         setStatus(req, "Started unlocking...");
@@ -117,10 +121,8 @@ puppeteer.use(
         } else if (!usingURL) {
           // If using the keyword field
           try {
-            await page.goto("https://www.chegg.com/search/" + url, {
-              waitUntil: "networkidle2",
-              timeout: 8000,
-            });
+            await page.goto("https://www.chegg.com/search/" + url);
+            await page.waitForSelector("[data-test*='study-question']", { timeout: 8000 });
           } catch (e) {}
         } else {
           res.render("unlocker.ejs", {
