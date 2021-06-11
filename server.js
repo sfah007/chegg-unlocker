@@ -122,7 +122,7 @@ puppeteer.use(
           // If using the keyword field
           try {
             await page.goto("https://www.chegg.com/search/" + url);
-            await page.waitForSelector("[data-test*='study-question']", { timeout: 8000 });
+            await page.waitForSelector("[data-test*='study-question']", { timeout: 7000 });
           } catch (e) {}
         } else {
           res.render("unlocker.ejs", {
@@ -163,10 +163,18 @@ puppeteer.use(
             try {
               await page.solveRecaptchas();
               setStatus(req, "Captcha successfully solved!");
-              await page.waitForNavigation({
-                waitUntil: "load",
-                timeout: 8000,
-              });
+              if (usingURL) {
+                try {
+                  await page.waitForNavigation({
+                    waitUntil: "load",
+                    timeout: 8000,
+                  });
+                } catch (e) {}
+              } else {
+                try {
+                  await page.waitForSelector("[data-test*='study-question']", { timeout: 7000 });
+                } catch (e) {}
+              }
             } catch (e) {}
           }
           console.log("Captcha done");
@@ -618,6 +626,7 @@ puppeteer.use(
       if (searchDatabase(currenturl) == null && searchDatabase(searchkeywords) == null) {
         // If screenshot not in database, add it to database
         data[searchkeywords] = dbSize + ".jpeg";
+        data[currenturl] = dbSize + ".jpeg";
         fs.writeFileSync("database.json", JSON.stringify(data));
         fs.writeFileSync("database/" + dbSize++ + ".jpeg", screenshot, "base64", function (e) {
           console.log(e);
@@ -648,11 +657,11 @@ puppeteer.use(
             .split("/")[5]
             .split("q")[0]
             .toLowerCase()
-            .replace(/[/’/ $-/:-?{-~!"^_`\[\]]/g, "");
+            .replace(/^\d+|[/’/ $-/:-?{-~!"^_`\[\]]/g, "");
         } else {
           searchKeywords = keywords
             .toLowerCase()
-            .replace(/[/’$-/:-?{-~!"^_`\[\]]/g, "")
+            .replace(/^\d+|[/’$-/:-?{-~!"^_`\[\]]/g, "")
             .replace(new RegExp(fillerWords.join("\\b|\\b"), "g"), "")
             .replace(/\ /g, "");
         }
@@ -665,11 +674,11 @@ puppeteer.use(
               [i].split("/")[5]
               .split("q")[0]
               .toLowerCase()
-              .replace(/[/’/ $-/:-?{-~!"^_`\[\]]/g, "");
+              .replace(/^\d+|[/’/ $-/:-?{-~!"^_`\[\]]/g, "");
           } else {
             dbKeywords = Object.keys(data)
               [i].toLowerCase()
-              .replace(/[/’$-/:-?{-~!"^_`\[\]]/g, "")
+              .replace(/^\d+|[/’$-/:-?{-~!"^_`\[\]]/g, "")
               .replace(new RegExp(fillerWords.join("\\b|\\b"), "g"), "")
               .replace(/\ /g, "");
           }
