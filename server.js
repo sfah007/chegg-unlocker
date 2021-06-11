@@ -142,13 +142,6 @@ puppeteer.use(
           setStatus(req, "Attempting to solve captcha...");
 
           try {
-            await page.waitForNavigation({
-              waitUntil: "networkidle2",
-              timeout: 5000,
-            });
-          } catch (e) {}
-
-          try {
             await reCaptcha(page, cursor, apikeys.witai); // Attempting to solve captcha using text to speech recognition
             await page.waitForNavigation({
               waitUntil: "load",

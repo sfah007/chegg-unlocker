@@ -28,14 +28,14 @@ async function reCaptcha(page, cursor, apikey) {
       paddingPercentage: 2,
     });
 
-    await page.waitForTimeout(rdn(150, 200));
+    await page.waitForTimeout(rdn(500, 800));
 
     // Click the audio captcha button
     frames = await page.frames();
     const imageFrame = frames.find((frame) => frame.url().includes("api2/bframe"));
     const audioButton = await imageFrame.$("#recaptcha-audio-button");
     await cursor.click(audioButton, {
-      waitForClick: rdn(50, 100),
+      waitForClick: rdn(100, 150),
       waitForSelector: rdn(100, 150),
       paddingPercentage: 0,
     });
