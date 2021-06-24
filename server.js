@@ -51,7 +51,6 @@ puppeteer.use(
     puppeteerOptions: {
       headless: true,
       slowMo: 0,
-      userDataDir: "./cache/",
       ignoreHTTPSErrors: true,
       args: [
         "--no-sandbox",
@@ -105,6 +104,7 @@ puppeteer.use(
         });
 
         const cursor = ghostCursor.createCursor(page, await ghostCursor.getRandomPagePoint(page));
+        await ghostCursor.installMouseHelper(page);
 
         const cookiesString = fs.readFileSync("cookies.json");
         const cookies = JSON.parse(cookiesString);
@@ -141,34 +141,68 @@ puppeteer.use(
           console.log("Captcha detected");
           setStatus(req, "Attempting to solve captcha...");
 
-          try {
-            await reCaptcha(page, cursor, apikeys.witai); // Attempting to solve captcha using text to speech recognition
-            await page.waitForNavigation({
-              waitUntil: "load",
-              timeout: 10000,
-            });
-          } catch (e) {
-            console.log(e);
-            console.log("Backup captcha solving");
-            setStatus(req, "Still solving captcha, this is taking longer than expected...");
-
-            // Attempting to solve captcha using 2captcha
+          if (page.frames().find((frame) => frame.url().includes("api2/anchor")) === undefined) {
+            // If it's a "hold to confirm" captcha
             try {
-              await page.solveRecaptchas();
-              setStatus(req, "Captcha successfully solved!");
-              if (usingURL) {
-                try {
-                  await page.waitForNavigation({
-                    waitUntil: "load",
-                    timeout: 8000,
-                  });
-                } catch (e) {}
-              } else {
-                try {
-                  await page.waitForSelector("[data-test*='study-question']", { timeout: 7000 });
-                } catch (e) {}
-              }
+              await page.waitForNavigation({
+                waitUntil: "networkidle2",
+                timeout: 5000,
+              });
             } catch (e) {}
+
+            const captchabox = await (await page.$("#px-captcha")).boundingBox();
+
+            await cursor.moveTo(await ghostCursor.getRandomPagePoint(page));
+            await cursor.moveTo({ x: captchabox.x + 12, y: captchabox.y + 12 });
+            await page.waitForTimeout(500);
+            await page.mouse.down();
+            await page.waitForTimeout(3500);
+            await page.mouse.up();
+            await cursor.moveTo(await ghostCursor.getRandomPagePoint(page));
+            await page.waitForTimeout(5000);
+            if (usingURL) {
+              try {
+                await page.waitForNavigation({
+                  waitUntil: "load",
+                  timeout: 8000,
+                });
+              } catch (e) {}
+            } else {
+              try {
+                await page.waitForSelector("[data-test*='study-question']", { timeout: 7000 });
+              } catch (e) {}
+            }
+          } else {
+            // If it's a regular captcha
+            try {
+              await reCaptcha(page, cursor, apikeys.witai); // Attempting to solve captcha using text to speech recognition
+              await page.waitForNavigation({
+                waitUntil: "load",
+                timeout: 10000,
+              });
+            } catch (e) {
+              console.log(e);
+              console.log("Backup captcha solving");
+              setStatus(req, "Still solving captcha, this is taking longer than expected...");
+
+              // Attempting to solve captcha using 2captcha
+              try {
+                await page.solveRecaptchas();
+                setStatus(req, "Captcha successfully solved!");
+                if (usingURL) {
+                  try {
+                    await page.waitForNavigation({
+                      waitUntil: "load",
+                      timeout: 8000,
+                    });
+                  } catch (e) {}
+                } else {
+                  try {
+                    await page.waitForSelector("[data-test*='study-question']", { timeout: 7000 });
+                  } catch (e) {}
+                }
+              } catch (e) {}
+            }
           }
           console.log("Captcha done");
         }
@@ -361,13 +395,13 @@ puppeteer.use(
       // Check if cookies are set
       if (!refreshAccessCode(req.body.password)) {
         // Try to login into a session
-        console.log("Failed login with password: " + req.body.password);
+        console.log("Failed login with password: " + req.body.password + " (" + new Date() + ")");
         res.render("login.ejs", {
           errorMessage: "Invalid access code, try again.",
         });
       } else {
         setStatus(req, "");
-        console.log("Login with password: " + req.body.password);
+        console.log("Login with password: " + req.body.password + " (" + new Date() + ")");
         req.session.accessid = req.body.password; // Set the cookies
         req.session.save();
         res.redirect("/");
@@ -392,7 +426,7 @@ puppeteer.use(
       if (users[req.session.accessid] === undefined) {
         // Check if access code is still valid
         req.session.accessid = undefined;
-        console.log("Failed login with password: " + req.body.password);
+        console.log("Failed login with password: " + req.body.password + " (" + new Date() + ")");
         res.redirect("/login");
       } else {
         let requestsAmount = refreshRequest(req.session.accessid);
