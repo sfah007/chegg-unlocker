@@ -228,6 +228,11 @@ input:focus {
   transition: all 0.5s;
 }
 
+.disabledButton {
+  pointer-events: "none" !important;
+  background: "#7e7e7e" !important;
+}
+
 .goBack {
   margin: 10px;
   font-family: "CircularBold";

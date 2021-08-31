@@ -4,12 +4,12 @@ const app = express();
 const puppeteer = require("puppeteer-extra");
 const pluginStealth = require("puppeteer-extra-plugin-stealth");
 const AdblockerPlugin = require("puppeteer-extra-plugin-adblocker");
-const reCaptcha = require("./captchaSolver.js");
+const { reCaptcha, rdn } = require("./captchaSolver.js");
 const { Cluster } = require("puppeteer-cluster");
 const RecaptchaPlugin = require("puppeteer-extra-plugin-recaptcha");
 const ghostCursor = require("ghost-cursor");
 const adblocker = AdblockerPlugin({
-  blockTrackers: true,
+  blockTrackers: false,
 });
 const expressSession = require("express-session")({
   secret: "chegg-secret-key", // Cookie secret key
@@ -27,7 +27,6 @@ app.use(expressSession);
 let rawdata = fs.readFileSync("access.json");
 let users = JSON.parse(rawdata);
 let apikeys = JSON.parse(fs.readFileSync("apikeys.json"));
-let firstTime = true;
 
 puppeteer.use(pluginStealth()); // For stealth mode against captcha
 puppeteer.use(adblocker); // Adblock
@@ -88,14 +87,10 @@ puppeteer.use(
       try {
         setStatus(req, "Started unlocking...");
 
-        if (firstTime) {
-          console.log("Logging in proxy");
-          await page.authenticate({
-            username: apikeys.proxyusername,
-            password: apikeys.proxypassword,
-          });
-          firstTime = false;
-        }
+        await page.authenticate({
+          username: apikeys.proxyusername,
+          password: apikeys.proxypassword,
+        });
 
         await page.setViewport({ width: 1280, height: 800 });
         await page.setUserAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4427.0 Safari/537.36");
@@ -153,13 +148,17 @@ puppeteer.use(
             const captchabox = await (await page.$("#px-captcha")).boundingBox();
 
             await cursor.moveTo(await ghostCursor.getRandomPagePoint(page));
-            await cursor.moveTo({ x: captchabox.x + 12, y: captchabox.y + 12 });
-            await page.waitForTimeout(500);
+            await cursor.moveTo({ x: captchabox.x + rdn(15, 25), y: captchabox.y + rdn(15, 25) });
+            await page.waitForTimeout(rdn(400, 600));
             await page.mouse.down();
-            await page.waitForTimeout(3500);
+
+            await page.waitForSelector("iframe");
+            const elementHandle = await page.$('iframe[style*="block"]');
+            const iframe = await elementHandle.contentFrame();
+            await iframe.waitForSelector(".draw");
+
             await page.mouse.up();
             await cursor.moveTo(await ghostCursor.getRandomPagePoint(page));
-            await page.waitForTimeout(5000);
             if (usingURL) {
               try {
                 await page.waitForNavigation({
@@ -207,11 +206,11 @@ puppeteer.use(
           console.log("Captcha done");
         }
 
-        if ((await page.$("[data-area*='result1']")) != null) {
+        if ((await page.$("[data-test='section-1-serp-result-1-study-link']")) != null) {
           // If arrived in a search screen
           setStatus(req, "Found a matching solution...");
 
-          await cursor.click("[data-area*='result1']");
+          await cursor.click("[data-test='section-1-serp-result-1-study-link']");
 
           try {
             await page.waitForNavigation({
@@ -643,19 +642,19 @@ puppeteer.use(
   }
 
   const fillerWords = JSON.parse(fs.readFileSync("filler.json"));
-  let dbSize = Object.keys(JSON.parse(fs.readFileSync("database.json"))).length;
 
   function addToDatabase(screenshot, currenturl, searchkeywords) {
     try {
       database = fs.readFileSync("database.json");
       let data = JSON.parse(database);
+      let dbSize = Object.keys(data).length;
 
       if (searchDatabase(currenturl) == null && searchDatabase(searchkeywords) == null) {
         // If screenshot not in database, add it to database
         data[searchkeywords] = dbSize + ".jpeg";
         data[currenturl] = dbSize + ".jpeg";
         fs.writeFileSync("database.json", JSON.stringify(data));
-        fs.writeFileSync("database/" + dbSize++ + ".jpeg", screenshot, "base64", function (e) {
+        fs.writeFileSync("database/" + dbSize + ".jpeg", screenshot, "base64", function (e) {
           console.log(e);
         });
       } else {
@@ -681,7 +680,8 @@ puppeteer.use(
       try {
         if (keywords.match(/(^$|https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|www\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9]+\.[^\s]{2,}|www\.[a-zA-Z0-9]+\.[^\s]{2,})/)) {
           searchKeywords = keywords
-            .split("/")[5]
+            .split("/")
+            .pop()
             .split("q")[0]
             .toLowerCase()
             .replace(/^\d+|[/’/ $-/:-?{-~!"^_`\[\]]/g, "");
@@ -692,13 +692,16 @@ puppeteer.use(
             .replace(new RegExp(fillerWords.join("\\b|\\b"), "g"), "")
             .replace(/\ /g, "");
         }
-      } catch (e) {}
+      } catch (e) {
+        console.log(e);
+      }
 
       for (i in Object.keys(data)) {
         try {
           if (Object.keys(data)[i].match(/(^$|https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|www\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9]+\.[^\s]{2,}|www\.[a-zA-Z0-9]+\.[^\s]{2,})/)) {
             dbKeywords = Object.keys(data)
-              [i].split("/")[5]
+              [i].split("/")
+              .pop()
               .split("q")[0]
               .toLowerCase()
               .replace(/^\d+|[/’/ $-/:-?{-~!"^_`\[\]]/g, "");
@@ -709,7 +712,9 @@ puppeteer.use(
               .replace(new RegExp(fillerWords.join("\\b|\\b"), "g"), "")
               .replace(/\ /g, "");
           }
-        } catch (e) {}
+        } catch (e) {
+          console.log(e);
+        }
 
         if (dbKeywords.includes(searchKeywords) || searchKeywords.includes(dbKeywords)) {
           return Object.values(data)[i];

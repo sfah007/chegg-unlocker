@@ -137,4 +137,4 @@ async function reCaptcha(page, cursor, apikey) {
   }
 }
 
-module.exports = reCaptcha;
+module.exports = { reCaptcha, rdn };

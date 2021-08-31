@@ -15,8 +15,9 @@
       <div><button class="goBack" value="send">Go back</button></div>
       <img src="assets/refresh.png" id="refresh_button" onclick="refreshScreenshot()" />
       <h1 class="stats_after">
-        <u>Requests:</u> <%= requests %>&emsp;&emsp;<u>Expiration:</u>
-        <%= expiration %>
+        <u>Requests:</u>
+        <%= requests %>&emsp;&emsp;<u>Expiration:</u>
+          <%= expiration %>
       </h1>
     </form>
     <img src="assets/background.jpg" id="background_image" />
@@ -46,13 +47,16 @@
             clearInterval(statusFetch);
             refresh = false;
             loading = false;
-            $("html").html(data);
-            originalText = $(".stats_after").html();
+            $("#answer_img").attr("src", /<img id="answer_img" src="(.*)"/gm.exec(data)[1]);
+            $(".stats_after").html(originalText);
+            $("#refresh_button").css("opacity", 0);
+            $("#refresh_button").css("cursor", "auto");
+            $(".goBack").removeClass("disabledButton")
           },
         });
         loading = true;
         $("#refresh_button").addClass("rotate");
-        $(".goBack").css({ "pointer-events": "none", background: "#7e7e7e" });
+        $(".goBack").addClass("disabledButton")
         $(".stats_after").fadeOut(500, function () {
           $(this).css("text-align", "left").html("").fadeIn(500);
         });
@@ -81,14 +85,14 @@
 
     $("#refresh_button").hover(
       function () {
-        if (!loading) {
+        if (!loading && refresh) {
           $(".stats_after").fadeOut(300, function () {
             $(this).css("text-align", "left").html("Refresh the question with a newer answer").fadeIn(300);
           });
         }
       },
       function () {
-        if (!loading) {
+        if (!loading && refresh) {
           $(".stats_after").fadeOut(300, function () {
             $(this).css("text-align", "right").html(originalText).fadeIn(300);
           });
