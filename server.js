@@ -682,7 +682,7 @@ puppeteer.use(
           searchKeywords = keywords
             .split("/")
             .pop()
-            .split("q")[0]
+            .replace(/q\d+/gm, "")
             .toLowerCase()
             .replace(/^\d+|[/’/ $-/:-?{-~!"^_`\[\]]/g, "");
         } else {
@@ -702,7 +702,7 @@ puppeteer.use(
             dbKeywords = Object.keys(data)
               [i].split("/")
               .pop()
-              .split("q")[0]
+              .replace(/q\d+/gm, "")
               .toLowerCase()
               .replace(/^\d+|[/’/ $-/:-?{-~!"^_`\[\]]/g, "");
           } else {
