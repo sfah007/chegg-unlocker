@@ -42,7 +42,7 @@ puppeteer.use(
 
 (async () => {
   const cluster = await Cluster.launch({
-    concurrency: Cluster.CONCURRENCY_PAGE,
+    concurrency: Cluster.CONCURRENCY_CONTEXT,
     maxConcurrency: 1,
     timeout: 100000,
     monitor: true,
@@ -56,6 +56,7 @@ puppeteer.use(
         "--disable-setuid-sandbox",
         "--disable-web-security",
         "--disable-dev-shm-usage",
+        "--incognito",
         "--disable-features=site-per-process",
         "--proxy-server=" + apikeys.proxyip, // Dedicated proxy server to bypass most if not all captcha
       ],
@@ -98,7 +99,7 @@ puppeteer.use(
           Origin: "https://www.chegg.com",
         });
 
-        const cursor = ghostCursor.createCursor(page, await ghostCursor.getRandomPagePoint(page));
+        const cursor = ghostCursor.createCursor(page);
         await ghostCursor.installMouseHelper(page);
 
         const cookiesString = fs.readFileSync("cookies.json");
@@ -132,6 +133,7 @@ puppeteer.use(
         }
 
         if ((await page.$("#px-captcha")) != null) {
+          await cursor.moveTo(await ghostCursor.getRandomPagePoint(page));
           // Detect captcha screen and solve captch (if no proxy server provided)
           console.log("Captcha detected");
           setStatus(req, "Attempting to solve captcha...");
@@ -141,15 +143,19 @@ puppeteer.use(
             try {
               await page.waitForNavigation({
                 waitUntil: "networkidle2",
-                timeout: 5000,
+                timeout: 1000,
               });
             } catch (e) {}
 
             const captchabox = await (await page.$("#px-captcha")).boundingBox();
 
             await cursor.moveTo(await ghostCursor.getRandomPagePoint(page));
+            await cursor.moveTo(await ghostCursor.getRandomPagePoint(page));
+            await cursor.moveTo(await ghostCursor.getRandomPagePoint(page));
             await cursor.moveTo({ x: captchabox.x + rdn(15, 25), y: captchabox.y + rdn(15, 25) });
-            await page.waitForTimeout(rdn(400, 600));
+            await cursor.moveTo(await ghostCursor.getRandomPagePoint(page));
+            await cursor.moveTo({ x: captchabox.x + rdn(15, 25), y: captchabox.y + rdn(15, 25) });
+            await page.waitForTimeout(rdn(100, 200));
             await page.mouse.down();
 
             await page.waitForSelector("iframe");
@@ -158,6 +164,7 @@ puppeteer.use(
             await iframe.waitForSelector(".draw");
 
             await page.mouse.up();
+            await cursor.moveTo(await ghostCursor.getRandomPagePoint(page));
             await cursor.moveTo(await ghostCursor.getRandomPagePoint(page));
             if (usingURL) {
               try {
